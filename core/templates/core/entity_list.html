@@ -1,32 +1,40 @@
-<!-- templates/core/entity_list.html -->
 {% extends 'base.html' %}
 {% block title %}Entity List{% endblock %}
 {% block content %}
-    <h1>Entities</h1>
-    <a href="{% url 'entity_create' %}" class="btn btn-primary mb-3">Create New Entity</a>
-    {% if entities %}
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for entity in entities %}
-                    <tr>
-                        <td>{{ entity.name }}</td>
-                        <td>{{ entity.created_at }}</td>
-                        <td>
-                            <a href="{% url 'field_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-info">Add Field</a>
-                            <a href="{% url 'relation_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-secondary">Add Relation</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>No entities defined yet.</p>
-    {% endif %}
+<h2>Entity List</h2>
+<a href="{% url 'entity_create' %}" class="btn btn-primary mb-3">Create New Entity</a>
+<a href="{% url 'field_create' %}" class="btn btn-primary mb-3">Create New Field</a>
+<a href="{% url 'relation_create' %}" class="btn btn-primary mb-3">Create New Relation</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Created At</th>
+            <th>Actions</th>
+            <th>Manage Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entity in entities %}
+        <tr>
+            <td>{{ entity.name }}</td>
+            <td>{{ entity.created_at }}</td>
+            <td>
+                <a href="{% url 'field_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-info">Add Field</a>
+                <a href="{% url 'relation_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-info">Add Relation</a>
+            </td>
+            <td>
+                {% url entity.name|lower|add:'_list' as crud_url %}
+                {% if crud_url %}
+                <a href="{{ crud_url }}" class="btn btn-sm btn-primary">Manage {{ entity.name }}</a>
+                {% else %}
+                <span class="text-muted">Run `generate_crud` to manage {{ entity.name }}</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center">No entities available</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
