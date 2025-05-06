@@ -1,0 +1,32 @@
+<!-- templates/core/entity_list.html -->
+{% extends 'base.html' %}
+{% block title %}Entity List{% endblock %}
+{% block content %}
+    <h1>Entities</h1>
+    <a href="{% url 'entity_create' %}" class="btn btn-primary mb-3">Create New Entity</a>
+    {% if entities %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entity in entities %}
+                    <tr>
+                        <td>{{ entity.name }}</td>
+                        <td>{{ entity.created_at }}</td>
+                        <td>
+                            <a href="{% url 'field_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-info">Add Field</a>
+                            <a href="{% url 'relation_create' %}?entity={{ entity.id }}" class="btn btn-sm btn-secondary">Add Relation</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No entities defined yet.</p>
+    {% endif %}
+{% endblock %}

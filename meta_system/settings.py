@@ -57,7 +57,7 @@ ROOT_URLCONF = "meta_system.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        'DIRS': [BASE_DIR / 'templates'],  # اضافه کردن پوشه templates
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
