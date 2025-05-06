@@ -13,19 +13,14 @@
         </tr>
     </thead>
     <tbody>
-        {% for user in users %}
+        {% for item in object_field_values %}
         <tr>
-            {% for field in fields %}
-            <td>
-                {% if user.field %}
-                {{ user.field }}
-                {% else %}N/A
-                {% endif %}
-            </td>
+            {% for value in item.values %}
+            <td>{{ value }}</td>
             {% endfor %}
             <td>
-                <a href="{% url 'user_edit' user.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'user_delete' user.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                <a href="{% url 'user_edit' item.object.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'user_delete' item.object.pk %}" class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>
         {% empty %}

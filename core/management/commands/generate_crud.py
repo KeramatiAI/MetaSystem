@@ -44,7 +44,13 @@ class {model_name}ListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['fields'] = [field.name for field in Field.objects.filter(entity__name='{model_name}')]
+        fields = [field.name for field in Field.objects.filter(entity__name='{model_name}')]
+        context['fields'] = fields
+        object_list = context['{lower_model_name}s']
+        context['object_field_values'] = [
+            {{'object': obj, 'values': [getattr(obj, field) if getattr(obj, field, None) is not None else 'N/A' for field in fields]}}
+            for obj in object_list
+        ]
         return context
 
 class {model_name}CreateView(CreateView):
@@ -74,7 +80,6 @@ class {model_name}DeleteView(DeleteView):
 """
 
             # تولید قالب‌ها
-            # قالب لیست
             list_template = """{% extends 'base.html' %}
 {% block title %}""" + model_name + """ List{% endblock %}
 {% block content %}
@@ -90,19 +95,14 @@ class {model_name}DeleteView(DeleteView):
         </tr>
     </thead>
     <tbody>
-        {% for """ + lower_model_name + """ in """ + lower_model_name + """s %}
+        {% for item in object_field_values %}
         <tr>
-            {% for field in fields %}
-            <td>
-                {% if """ + lower_model_name + """.field %}
-                {{ """ + lower_model_name + """.field }}
-                {% else %}N/A
-                {% endif %}
-            </td>
+            {% for value in item.values %}
+            <td>{{ value }}</td>
             {% endfor %}
             <td>
-                <a href="{% url '""" + lower_model_name + """_edit' """ + lower_model_name + """.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url '""" + lower_model_name + """_delete' """ + lower_model_name + """.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                <a href="{% url '""" + lower_model_name + """_edit' item.object.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url '""" + lower_model_name + """_delete' item.object.pk %}" class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>
         {% empty %}
@@ -112,7 +112,6 @@ class {model_name}DeleteView(DeleteView):
 </table>
 {% endblock %}
 """
-            # قالب فرم
             form_template = """{% extends 'base.html' %}
 {% block title %}{% if form.instance.pk %}Edit """ + model_name + """{% else %}Create """ + model_name + """{% endif %}{% endblock %}
 {% block content %}
@@ -126,7 +125,6 @@ class {model_name}DeleteView(DeleteView):
 </form>
 {% endblock %}
 """
-            # قالب تأیید حذف
             delete_template = """{% extends 'base.html' %}
 {% block title %}Delete """ + model_name + """{% endblock %}
 {% block content %}
@@ -141,19 +139,19 @@ class {model_name}DeleteView(DeleteView):
 """
 
             # ذخیره قالب‌ها
-            with open(templates_dir / f'{lower_model_name}_list.html', 'w') as f:
+            with open(templates_dir / f'{lower_model_name}_list.html', 'w', encoding='utf-8') as f:
                 f.write(list_template)
-            with open(templates_dir / f'{lower_model_name}_form.html', 'w') as f:
+            with open(templates_dir / f'{lower_model_name}_form.html', 'w', encoding='utf-8') as f:
                 f.write(form_template)
-            with open(templates_dir / f'{lower_model_name}_confirm_delete.html', 'w') as f:
+            with open(templates_dir / f'{lower_model_name}_confirm_delete.html', 'w', encoding='utf-8') as f:
                 f.write(delete_template)
 
         urls_content += "]\n"
 
         # ذخیره فایل‌های views و urls
-        with open(views_path, 'w') as f:
+        with open(views_path, 'w', encoding='utf-8') as f:
             f.write(views_content)
-        with open(urls_path, 'w') as f:
+        with open(urls_path, 'w', encoding='utf-8') as f:
             f.write(urls_content)
 
         self.stdout.write(self.style.SUCCESS(

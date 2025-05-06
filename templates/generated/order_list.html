@@ -13,19 +13,14 @@
         </tr>
     </thead>
     <tbody>
-        {% for order in orders %}
+        {% for item in object_field_values %}
         <tr>
-            {% for field in fields %}
-            <td>
-                {% if order.field %}
-                {{ order.field }}
-                {% else %}N/A
-                {% endif %}
-            </td>
+            {% for value in item.values %}
+            <td>{{ value }}</td>
             {% endfor %}
             <td>
-                <a href="{% url 'order_edit' order.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'order_delete' order.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                <a href="{% url 'order_edit' item.object.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'order_delete' item.object.pk %}" class="btn btn-sm btn-danger">Delete</a>
             </td>
         </tr>
         {% empty %}

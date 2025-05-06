@@ -11,7 +11,13 @@ class UserListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['fields'] = [field.name for field in Field.objects.filter(entity__name='User')]
+        fields = [field.name for field in Field.objects.filter(entity__name='User')]
+        context['fields'] = fields
+        object_list = context['users']
+        context['object_field_values'] = [
+            {'object': obj, 'values': [getattr(obj, field) if getattr(obj, field, None) is not None else 'N/A' for field in fields]}
+            for obj in object_list
+        ]
         return context
 
 class UserCreateView(CreateView):
@@ -38,7 +44,13 @@ class OrderListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['fields'] = [field.name for field in Field.objects.filter(entity__name='Order')]
+        fields = [field.name for field in Field.objects.filter(entity__name='Order')]
+        context['fields'] = fields
+        object_list = context['orders']
+        context['object_field_values'] = [
+            {'object': obj, 'values': [getattr(obj, field) if getattr(obj, field, None) is not None else 'N/A' for field in fields]}
+            for obj in object_list
+        ]
         return context
 
 class OrderCreateView(CreateView):
